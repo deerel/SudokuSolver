@@ -111,50 +111,41 @@ bool parse(const unsigned index, const field& quiz, field& solution)
 */
 bool isPossible(const unsigned number, const unsigned index, const field& quiz, field& solution)
 {
-	const unsigned horStart = (index / 9) * 9;
-	const unsigned vertStart = index % 9;
-	unsigned squareStart = 0;
 
-	// Find the row that index is in
-	if (index > 26) squareStart = 27;
-	if (index > 53) squareStart = 54;
-	// Find the column that index is in
-	squareStart += ((index / 3) % 3) * 3;
-
-	bool possibleNumber = true;
 	// Horizontal
+	const unsigned horStart = (index / 9) * 9;
 	for (unsigned i = horStart; i < horStart + 9; ++i)
 	{
 		if (solution.pos[i] == number || quiz.pos[i] == number) {
-			possibleNumber = false;
-			return possibleNumber;
-			break;
+			return false;
 		}
 	}
 	// Vertical
+	const unsigned vertStart = index % 9;
 	for (unsigned i = vertStart; i < vertStart + 81; i += 9)
 	{
 		if (solution.pos[i] == number || quiz.pos[i] == number) {
-			possibleNumber = false;
-			return possibleNumber;
-			break;
+			return false;
 		}
 	}
 	// Square
+	unsigned squareStart = 0;
+	// Find the section start index
+	if (index > 26) squareStart = 27;
+	if (index > 53) squareStart = 54;
+	squareStart += ((index / 3) % 3) * 3;
 	for (unsigned i = 0; i < 3; ++i)
 	{
 		for (unsigned j = 0; j < 3; ++j)
 		{
 			const unsigned sIndex = squareStart + i * 9 + j;
 			if (solution.pos[sIndex] == number || quiz.pos[sIndex] == number) {
-				possibleNumber = false;
-				return possibleNumber;
-				break;
+				return false;
 			}
 		}
 	}
 
-	return possibleNumber;
+	return true;
 }
 }
 
