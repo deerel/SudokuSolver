@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 int main() {
 
@@ -30,23 +31,61 @@ int main() {
 
 	getline(correctSolution, solutionLine);
 
-	while (getline(answers, answerLine)) {
-		if (!getline(correctSolution, solutionLine)) {
-			std::cerr << "Error while reading file sudoku.csv";
-			exit(1);
-		}
-		bool isCorrect = true;
-		for (size_t i = 0; i < 81; ++i) {
-			if (solutionLine[i + 82] != answerLine[i]) {
-				std::cout << "Failed\n Answer:   " << answerLine << "\nSolution: " << solutionLine << std::endl;
-				std::cout << "Aborting check." << std::endl;
-				std::cin.get();
-				return 0;
-			}
+	int count = 0;
+	std::vector<std::string> vecSolution(1000000), vecAnswers(1000000);
+
+	for (int i = 0; i < 1000000; ++i) {
+		getline(answers, answerLine);
+		getline(correctSolution, solutionLine);
+		vecAnswers.at(i) = answerLine;
+		vecSolution.at(i) = solutionLine.substr(82, 82);
+	}
+
+	bool isCorrect = true;
+	#pragma omp parallel for 
+	for (int i = 0; i < 1000000; ++i) {
+		#pragma omp critical
+		count++;
+		if (vecAnswers.at(i) != vecSolution.at(i)) {
+			isCorrect = false;
 		}
 	}
 
-	std::cout << "All correct!" << std::endl;
+	std::cout << "Made it to number " << count << std::endl;
+
+	if (isCorrect) {
+		std::cout << "All correct!" << std::endl;
+	}
+	else {
+		std::cout << "Not ok!" << std::endl;
+	}
+		
+
+	//while (getline(answers, answerLine)) {
+	//	std::cout << ++count << std::endl;
+	//	if (!getline(correctSolution, solutionLine)) {
+	//		std::cerr << "Error while reading file sudoku.csv";
+	//		exit(1);
+	//	}
+
+	//	bool isCorrect = true;
+	//	if (solutionLine.substr(82, 81) != answerLine) {
+	//		std::cout << "Failed\n Answer:   " << answerLine << "\nSolution: " << solutionLine.substr(82, 81) << std::endl;
+	//		std::cout << "Aborting check." << std::endl;
+	//		std::cin.get();
+	//		return 0;
+	//	}
+	//	//for (size_t i = 0; i < 81; ++i) {
+	//	//	if (solutionLine[i + 82] != answerLine[i]) {
+	//	//		std::cout << "Failed\n Answer:   " << answerLine << "\nSolution: " << solutionLine << std::endl;
+	//	//		std::cout << "Aborting check." << std::endl;
+	//	//		std::cin.get();
+	//	//		return 0;
+	//	//	}
+	//	//}
+	//}
+
+	//std::cout << "All correct!" << std::endl;
 	std::cin.get();
 	return 0;
 }
