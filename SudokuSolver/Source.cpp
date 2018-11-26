@@ -14,6 +14,7 @@
 #include <sstream>
 #include <fstream>
 #include <chrono>
+#include <vector>
 
 namespace sudokusolver {
 
@@ -37,6 +38,16 @@ struct field
 		}
 		s[81] = '\n';
 		output_file.write(s, 82);
+	}
+
+	std::string toString() const {
+		char s[83];
+		for (size_t i = 0; i < 81; ++i) {
+			s[i] = pos[i] + 48;
+		}
+		s[81] = '\n';
+		s[82] = '\0';
+		return std::string(s);
 	}
 };
 
@@ -178,16 +189,40 @@ int main()
 	getline(input_file, textLine);
 
 	// Solve sudoku
-	while (getline(input_file, textLine)) {
-		for (size_t i = 0; i < 81; ++i) {
-			sudokuInput.pos[i] = textLine[i]-48;
+	//while (getline(input_file, textLine)) {
+	//	for (size_t i = 0; i < 81; ++i) {
+	//		sudokuInput.pos[i] = textLine[i]-48;
+	//	}
+	//	field sudokuOutput;
+	//	parse(0, sudokuInput, sudokuOutput);
+	//	sudokuOutput.writeToFile(output_file);
+	//}
+	std::vector<std::string> vecSolution(1000000);
+	std::vector<field> vecQuiz(1000000);
+
+	for (int i = 0; i < 1000000; ++i) {
+		getline(input_file, textLine);
+		for (int j = 0; j < 81; ++j) {
+			vecQuiz.at(i).pos[j] = textLine[j]-48;
 		}
-		field sudokuOutput;
-		parse(0, sudokuInput, sudokuOutput);
-		sudokuOutput.writeToFile(output_file);
 	}
 
+	#pragma omp parallel for 
+	for (int i = 0; i < 1000000; ++i) {
+		field sudokuOutput;
+		parse(0, vecQuiz.at(i), sudokuOutput);
+		vecSolution.at(i) = sudokuOutput.toString();
+		int x = 1;
+	}
+
+	for (int i = 0; i < 1000000; ++i) {
+		output_file.write(vecSolution.at(i).c_str(), 82);
+	}
+
+	output_file.flush();
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	output_file.close();
+	input_file.close();
 	std::cout << "Done!\n";
 	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 

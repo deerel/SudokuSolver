@@ -47,6 +47,9 @@ int main() {
 		#pragma omp critical
 		count++;
 		if (vecAnswers.at(i) != vecSolution.at(i)) {
+			std::cout << "Error at row " << i << "\n";
+			std::cout << "Got: " << vecAnswers.at(i) << "\n";
+			std::cout << "Exp: " << vecSolution.at(i) << "\n";
 			isCorrect = false;
 		}
 	}
