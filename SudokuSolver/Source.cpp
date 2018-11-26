@@ -170,7 +170,7 @@ int main()
 	input_file.open("sudoku.csv");
 
 	std::ofstream output_file;
-	output_file.open("output.txt");
+	output_file.open("answers.txt");
 
 	if (!input_file) {
 		std::cerr << "Unable to open file";
@@ -189,14 +189,6 @@ int main()
 	getline(input_file, textLine);
 
 	// Solve sudoku
-	//while (getline(input_file, textLine)) {
-	//	for (size_t i = 0; i < 81; ++i) {
-	//		sudokuInput.pos[i] = textLine[i]-48;
-	//	}
-	//	field sudokuOutput;
-	//	parse(0, sudokuInput, sudokuOutput);
-	//	sudokuOutput.writeToFile(output_file);
-	//}
 	std::vector<std::string> vecSolution(1000000);
 	std::vector<field> vecQuiz(1000000);
 
